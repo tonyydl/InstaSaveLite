@@ -8,17 +8,47 @@
   cursor: pointer;
   display: inline-flex;
   font: 600 13px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  gap: 6px;
-  min-height: 34px;
-  padding: 0 12px;
+  height: 38px;
+  justify-content: center;
+  padding: 0;
   position: fixed;
-  right: 18px;
+  right: auto;
   top: 86px;
+  width: 38px;
   z-index: 2147483647;
 }
 
 .instasavelite-download-button:hover {
   background: #1e293b;
+}
+
+.instasavelite-download-button span {
+  height: 18px;
+  position: relative;
+  width: 18px;
+}
+
+.instasavelite-download-button span::before {
+  background: #f8fafc;
+  border-radius: 999px;
+  content: "";
+  height: 12px;
+  left: 8px;
+  position: absolute;
+  top: 1px;
+  width: 2px;
+}
+
+.instasavelite-download-button span::after {
+  border-bottom: 2px solid #f8fafc;
+  border-right: 2px solid #f8fafc;
+  content: "";
+  height: 8px;
+  left: 5px;
+  position: absolute;
+  top: 6px;
+  transform: rotate(45deg);
+  width: 8px;
 }
 
 .instasavelite-download-button[hidden] {

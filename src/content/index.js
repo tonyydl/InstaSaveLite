@@ -6,10 +6,17 @@
   let button = null;
   let refreshTimer = null;
 
+  function getCurrentCandidate(candidates) {
+    return candidates
+      .filter((candidate) => candidate.inViewport)
+      .sort((a, b) => (b.viewportArea || 0) - (a.viewportArea || 0))[0] || candidates[0];
+  }
+
   function refreshCandidates() {
     cachedCandidates = root.detector.collectMediaCandidates(document);
     if (button) {
       button.hidden = cachedCandidates.length === 0;
+      root.overlay.positionDownloadButton(button, getCurrentCandidate(cachedCandidates));
     }
     return cachedCandidates;
   }
@@ -19,7 +26,7 @@
     if (!candidates.length) {
       return;
     }
-    const bestCandidate = candidates.find((candidate) => candidate.inViewport) || candidates[0];
+    const bestCandidate = getCurrentCandidate(candidates);
     await browserApi.runtime.sendMessage({
       type: messageTypes.DOWNLOAD_MEDIA,
       payload: { items: [bestCandidate] }
@@ -32,6 +39,7 @@
     }
     button = root.overlay.createDownloadButton({ onClick: downloadBestCandidate });
     button.hidden = cachedCandidates.length === 0;
+    root.overlay.positionDownloadButton(button, getCurrentCandidate(cachedCandidates));
   }
 
   function scheduleRefresh() {

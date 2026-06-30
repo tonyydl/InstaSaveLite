@@ -15,6 +15,15 @@
     return rect.bottom > 0 && rect.right > 0 && rect.top < height && rect.left < width;
   }
 
+  function getViewportArea(element, doc) {
+    const rect = element.getBoundingClientRect();
+    const viewportWidth = globalScope.innerWidth || doc.documentElement.clientWidth;
+    const viewportHeight = globalScope.innerHeight || doc.documentElement.clientHeight;
+    const visibleWidth = Math.max(0, Math.min(rect.right, viewportWidth) - Math.max(rect.left, 0));
+    const visibleHeight = Math.max(0, Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0));
+    return Math.round(visibleWidth * visibleHeight);
+  }
+
   function getActiveMediaRoot(doc) {
     const dialogs = Array.from(doc.querySelectorAll('[role="dialog"]'))
       .filter((dialog) => isVisibleElement(dialog) && isInViewport(dialog, doc));
@@ -47,8 +56,17 @@
       pageUrl: globalScope.location.href,
       width: element.naturalWidth || element.videoWidth || Math.round(rect.width),
       height: element.naturalHeight || element.videoHeight || Math.round(rect.height),
+      bounds: {
+        top: Math.round(rect.top),
+        right: Math.round(rect.right),
+        bottom: Math.round(rect.bottom),
+        left: Math.round(rect.left),
+        width: Math.round(rect.width),
+        height: Math.round(rect.height)
+      },
       visible: isVisibleElement(element),
-      inViewport: isInViewport(element, doc)
+      inViewport: isInViewport(element, doc),
+      viewportArea: getViewportArea(element, doc)
     };
   }
 

@@ -87,11 +87,15 @@ function loadContentScript() {
       createDownloadButton(options) {
         createdButton = {
           hidden: false,
+          style: {},
           click() {
             return options.onClick();
           }
         };
         return createdButton;
+      },
+      positionDownloadButton(button, candidate) {
+        button.positionedFor = candidate && candidate.id;
       }
     }
   };
@@ -136,8 +140,8 @@ test("debounces refresh scheduling during rapid mutation bursts", () => {
 test("downloadBestCandidate prefers the first in-viewport candidate", async () => {
   const env = loadContentScript();
   env.detectorCandidates = [
-    { id: "image-1", type: "image", url: "https://example.com/offscreen.jpg", inViewport: false },
-    { id: "image-2", type: "image", url: "https://example.com/onscreen.jpg", inViewport: true }
+    { id: "image-1", type: "image", url: "https://example.com/offscreen.jpg", inViewport: false, viewportArea: 0 },
+    { id: "image-2", type: "image", url: "https://example.com/onscreen.jpg", inViewport: true, viewportArea: 120000 }
   ];
 
   env.timers[0].fn();
@@ -145,6 +149,31 @@ test("downloadBestCandidate prefers the first in-viewport candidate", async () =
 
   assert.equal(env.sentMessages.length, 1);
   assert.equal(env.sentMessages[0].payload.items[0].id, "image-2");
+});
+
+test("downloadBestCandidate chooses the carousel slide with the largest viewport area", async () => {
+  const env = loadContentScript();
+  env.detectorCandidates = [
+    { id: "image-1", type: "image", url: "https://example.com/first.jpg", inViewport: true, viewportArea: 30000 },
+    { id: "image-2", type: "image", url: "https://example.com/second.jpg", inViewport: true, viewportArea: 240000 }
+  ];
+
+  env.timers[0].fn();
+  await env.createdButton.click();
+
+  assert.equal(env.sentMessages[0].payload.items[0].id, "image-2");
+});
+
+test("refresh positions the download button for the current media candidate", () => {
+  const env = loadContentScript();
+  env.detectorCandidates = [
+    { id: "image-1", type: "image", url: "https://example.com/first.jpg", inViewport: true, viewportArea: 30000 },
+    { id: "image-2", type: "image", url: "https://example.com/second.jpg", inViewport: true, viewportArea: 240000 }
+  ];
+
+  env.timers[0].fn();
+
+  assert.equal(env.createdButton.positionedFor, "image-2");
 });
 
 test("GET_MEDIA is the only handled message type", async () => {
