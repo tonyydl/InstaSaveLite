@@ -42,6 +42,10 @@
     return doc;
   }
 
+  function hasActiveMediaContext(doc) {
+    return getActiveMediaRoot(doc || document) !== (doc || document);
+  }
+
   function candidateFromElement(element, type, url, index, doc) {
     const normalized = media.normalizeMediaUrl(url, doc.baseURI);
     if (!normalized) {
@@ -135,6 +139,7 @@
 
   root.detector = {
     getActiveMediaRoot,
+    hasActiveMediaContext,
     collectMediaCandidates
   };
 })(globalThis);

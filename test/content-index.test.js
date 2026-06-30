@@ -15,6 +15,7 @@ function loadContentScript() {
   const sentMessages = [];
   let createdButton = null;
   let detectorCandidates = [];
+  let hasActiveMediaContext = true;
   let nextTimerId = 1;
 
   const documentElement = {
@@ -81,6 +82,9 @@ function loadContentScript() {
     detector: {
       collectMediaCandidates() {
         return detectorCandidates;
+      },
+      hasActiveMediaContext() {
+        return hasActiveMediaContext;
       }
     },
     overlay: {
@@ -114,6 +118,9 @@ function loadContentScript() {
     },
     set detectorCandidates(value) {
       detectorCandidates = value;
+    },
+    set hasActiveMediaContext(value) {
+      hasActiveMediaContext = value;
     }
   };
 }
@@ -174,6 +181,18 @@ test("refresh positions the download button for the current media candidate", ()
   env.timers[0].fn();
 
   assert.equal(env.createdButton.positionedFor, "image-2");
+});
+
+test("refresh hides the page overlay on profile gallery pages without an active post", () => {
+  const env = loadContentScript();
+  env.hasActiveMediaContext = false;
+  env.detectorCandidates = [
+    { id: "image-1", type: "image", url: "https://example.com/gallery.jpg", inViewport: true, viewportArea: 120000 }
+  ];
+
+  env.timers[0].fn();
+
+  assert.equal(env.createdButton.hidden, true);
 });
 
 test("GET_MEDIA is the only handled message type", async () => {

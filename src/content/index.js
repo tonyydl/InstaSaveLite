@@ -15,7 +15,7 @@
   function refreshCandidates() {
     cachedCandidates = root.detector.collectMediaCandidates(document);
     if (button) {
-      button.hidden = cachedCandidates.length === 0;
+      button.hidden = cachedCandidates.length === 0 || !root.detector.hasActiveMediaContext(document);
       root.overlay.positionDownloadButton(button, getCurrentCandidate(cachedCandidates));
     }
     return cachedCandidates;
@@ -38,7 +38,7 @@
       return;
     }
     button = root.overlay.createDownloadButton({ onClick: downloadBestCandidate });
-    button.hidden = cachedCandidates.length === 0;
+    button.hidden = cachedCandidates.length === 0 || !root.detector.hasActiveMediaContext(document);
     root.overlay.positionDownloadButton(button, getCurrentCandidate(cachedCandidates));
   }
 
