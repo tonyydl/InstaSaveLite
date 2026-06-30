@@ -4,7 +4,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const scriptPath = path.join(__dirname, "../src/background/service-worker.js");
-const scriptSource = fs.readFileSync(scriptPath, "utf8").trim();
+const scriptSource = fs.readFileSync(scriptPath, "utf8").replace(/\r\n/g, "\n").trim();
 
 test("service worker only imports the shared background scripts in order", () => {
   assert.equal(
