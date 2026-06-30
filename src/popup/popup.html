@@ -3,7 +3,25 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="popup.css">
     <title>InstaSaveLite</title>
   </head>
-  <body></body>
+  <body>
+    <main class="popup-shell">
+      <header class="popup-header">
+        <h1>InstaSaveLite</h1>
+        <button id="downloadAllButton" type="button">Download all</button>
+      </header>
+      <label class="setting-row">
+        <input id="askWhereToSaveInput" type="checkbox">
+        <span>Ask where to save</span>
+      </label>
+      <p id="statusText" class="status-text">Scanning this tab...</p>
+      <ul id="mediaList" class="media-list"></ul>
+    </main>
+    <script src="../vendor/browser-polyfill.min.js"></script>
+    <script src="../shared/constants.js"></script>
+    <script src="../shared/storage.js"></script>
+    <script src="popup.js"></script>
+  </body>
 </html>
