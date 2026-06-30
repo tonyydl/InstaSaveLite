@@ -46,9 +46,6 @@
     if (message.type === messageTypes.GET_MEDIA) {
       return Promise.resolve({ items: refreshCandidates() });
     }
-    if (message.type === messageTypes.DOWNLOAD_MEDIA) {
-      return Promise.resolve({ ok: true });
-    }
     return undefined;
   });
 

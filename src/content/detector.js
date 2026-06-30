@@ -83,10 +83,12 @@
   }
 
   function collectMediaCandidates(documentRef) {
-    return media.dedupeCandidates([
+    const candidates = [
       ...collectVideoCandidates(documentRef),
       ...collectImageCandidates(documentRef)
-    ]).map((candidate, index) => ({
+    ].filter((candidate) => candidate.visible && candidate.inViewport);
+
+    return media.dedupeCandidates(candidates).map((candidate, index) => ({
       ...candidate,
       index: index + 1,
       filename: media.createFilename({ ...candidate, index: index + 1 })
