@@ -6,6 +6,16 @@
     return globalScope.browser || globalScope.chrome;
   }
 
+  function getStorageArea() {
+    const api = getBrowserApi();
+
+    if (!api || !api.storage) {
+      return null;
+    }
+
+    return api.storage.sync || api.storage.local || null;
+  }
+
   function mergeSettings(input) {
     const settings = { ...defaults };
 
@@ -17,22 +27,22 @@
   }
 
   async function getSettings() {
-    const api = getBrowserApi();
+    const storageArea = getStorageArea();
 
-    if (!api || !api.storage || !api.storage.sync) {
+    if (!storageArea) {
       return mergeSettings();
     }
 
-    const values = await api.storage.sync.get(defaults);
+    const values = await storageArea.get(defaults);
     return mergeSettings(values);
   }
 
   async function saveSettings(settings) {
     const merged = mergeSettings(settings);
-    const api = getBrowserApi();
+    const storageArea = getStorageArea();
 
-    if (api && api.storage && api.storage.sync) {
-      await api.storage.sync.set(merged);
+    if (storageArea) {
+      await storageArea.set(merged);
     }
 
     return merged;

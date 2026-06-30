@@ -1,5 +1,10 @@
 (function initMedia(globalScope) {
   const root = globalScope.InstaSaveLite || (globalScope.InstaSaveLite = {});
+  const constants = root.constants;
+
+  function isAllowedMediaHost(hostname) {
+    return constants.INSTAGRAM_HOST_PATTERN.test(hostname) || constants.CDN_HOST_PATTERN.test(hostname);
+  }
 
   function parseSrcset(srcset) {
     if (!srcset || typeof srcset !== "string") {
@@ -25,7 +30,10 @@
 
     try {
       const parsed = new URL(url, baseUrl || "https://www.instagram.com/");
-      if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+      if (parsed.protocol !== "https:") {
+        return null;
+      }
+      if (!isAllowedMediaHost(parsed.hostname)) {
         return null;
       }
       parsed.hash = "";

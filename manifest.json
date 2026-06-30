@@ -31,7 +31,14 @@
     }
   ],
   "background": {
-    "service_worker": "src/background/service-worker.js"
+    "service_worker": "src/background/service-worker.js",
+    "scripts": [
+      "src/vendor/browser-polyfill.min.js",
+      "src/shared/constants.js",
+      "src/shared/media.js",
+      "src/shared/storage.js",
+      "src/background/background.js"
+    ]
   },
   "action": {
     "default_title": "InstaSaveLite",
@@ -45,7 +52,7 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "instasavelite@extension",
-      "strict_min_version": "109.0"
+      "strict_min_version": "121.0"
     }
   }
 }

@@ -8,26 +8,32 @@ const media = globalThis.InstaSaveLite.media;
 
 test("parseSrcset returns URLs and numeric widths", () => {
   assert.deepEqual(
-    media.parseSrcset("https://cdn.example/a.jpg 640w, https://cdn.example/b.jpg 1080w"),
+    media.parseSrcset("https://scontent.cdninstagram.com/a.jpg 640w, https://video.fbcdn.net/b.jpg 1080w"),
     [
-      { url: "https://cdn.example/a.jpg", width: 640 },
-      { url: "https://cdn.example/b.jpg", width: 1080 }
+      { url: "https://scontent.cdninstagram.com/a.jpg", width: 640 },
+      { url: "https://video.fbcdn.net/b.jpg", width: 1080 }
     ]
   );
 });
 
-test("normalizeMediaUrl rejects unsupported protocols and keeps Instagram CDN URLs", () => {
+test("normalizeMediaUrl allows only https Instagram and CDN hosts", () => {
   assert.equal(media.normalizeMediaUrl("javascript:alert(1)"), null);
   assert.equal(media.normalizeMediaUrl("data:image/png;base64,abc"), null);
+  assert.equal(media.normalizeMediaUrl("http://www.instagram.com/p/example/media/?x=1"), null);
+  assert.equal(media.normalizeMediaUrl("https://example.com/photo.jpg"), null);
   assert.equal(
     media.normalizeMediaUrl("https://scontent.cdninstagram.com/v/t51.29350-15/example.jpg?x=1#frag"),
     "https://scontent.cdninstagram.com/v/t51.29350-15/example.jpg?x=1"
+  );
+  assert.equal(
+    media.normalizeMediaUrl("/p/example/media/?x=1", "https://www.instagram.com/p/example/"),
+    "https://www.instagram.com/p/example/media/?x=1"
   );
 });
 
 test("createFilename includes date, type, padded index, and extension", () => {
   const name = media.createFilename(
-    { type: "image", index: 2, url: "https://example.com/photo.webp?token=abc" },
+    { type: "image", index: 2, url: "https://scontent.cdninstagram.com/photo.webp?token=abc" },
     new Date("2026-06-30T12:00:00Z")
   );
   assert.equal(name, "instagram-2026-06-30-image-02.webp");
@@ -35,7 +41,7 @@ test("createFilename includes date, type, padded index, and extension", () => {
 
 test("createFilename defaults unknown image URLs to jpg", () => {
   const name = media.createFilename(
-    { type: "image", index: 1, url: "https://example.com/media?id=123" },
+    { type: "image", index: 1, url: "https://www.instagram.com/media?id=123" },
     new Date("2026-06-30T12:00:00Z")
   );
   assert.equal(name, "instagram-2026-06-30-image-01.jpg");
@@ -58,9 +64,10 @@ test("scoreCandidate prefers visible viewport videos and large images", () => {
 
 test("dedupeCandidates keeps the highest scoring candidate per normalized URL", () => {
   const result = media.dedupeCandidates([
-    { id: "a", type: "image", url: "https://example.com/a.jpg#one", width: 100, height: 100, visible: true },
-    { id: "b", type: "image", url: "https://example.com/a.jpg#two", width: 1080, height: 1080, visible: true },
-    { id: "c", type: "video", url: "https://example.com/c.mp4", width: 720, height: 1280, visible: true }
+    { id: "a", type: "image", url: "https://scontent.cdninstagram.com/a.jpg#one", width: 100, height: 100, visible: true },
+    { id: "b", type: "image", url: "https://scontent.cdninstagram.com/a.jpg#two", width: 1080, height: 1080, visible: true },
+    { id: "c", type: "video", url: "https://video.fbcdn.net/c.mp4", width: 720, height: 1280, visible: true },
+    { id: "d", type: "image", url: "https://example.com/not-allowed.jpg", width: 2000, height: 2000, visible: true }
   ]);
 
   assert.deepEqual(result.map((item) => item.id), ["c", "b"]);

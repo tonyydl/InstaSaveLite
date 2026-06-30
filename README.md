@@ -23,7 +23,12 @@ This extension does not bypass login, private accounts, deleted content, paid co
 
 ## Usage
 
-Task 3 provides the extension scaffold and loadable runtime shells. Install the unpacked extension, open an Instagram page, and confirm the extension loads without errors. The in-page download button and toolbar popup download flows are planned for later tasks.
+Install the unpacked extension, open an Instagram post or reel on `instagram.com`, and wait for the page to finish loading.
+
+- Use the in-page Download button to save the most relevant visible item from the current view.
+- Open the toolbar popup to review the detected media list, then save any single item with its Save button.
+- Use Download all in the popup to queue every detected visible media item from the page without re-downloading duplicate URLs.
+- Toggle Ask where to save in the popup to choose whether the browser prompts for a destination before each download.
 
 ## Tests
 
