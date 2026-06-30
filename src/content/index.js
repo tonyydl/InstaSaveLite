@@ -4,6 +4,7 @@
   const messageTypes = root.constants.MESSAGE_TYPES;
   let cachedCandidates = [];
   let button = null;
+  let refreshTimer = null;
 
   function refreshCandidates() {
     cachedCandidates = root.detector.collectMediaCandidates(document);
@@ -33,7 +34,11 @@
   }
 
   function scheduleRefresh() {
-    globalScope.setTimeout(() => {
+    if (refreshTimer !== null) {
+      globalScope.clearTimeout(refreshTimer);
+    }
+    refreshTimer = globalScope.setTimeout(() => {
+      refreshTimer = null;
       refreshCandidates();
       ensureButton();
     }, 250);
@@ -50,7 +55,12 @@
   });
 
   const observer = new MutationObserver(scheduleRefresh);
-  observer.observe(document.documentElement, { childList: true, subtree: true });
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["src", "srcset", "poster", "style", "class"]
+  });
 
   scheduleRefresh();
 })(globalThis);

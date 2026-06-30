@@ -28,3 +28,13 @@ Commands:
 - `node --check src/content/detector.js` -> passed.
 - `node --check src/content/overlay-button.js` -> passed.
 - `node --check src/content/index.js` -> passed.
+
+Fix 2:
+- Expanded the `MutationObserver` in `src/content/index.js` to watch `src`, `srcset`, `poster`, `style`, and `class` attribute changes in addition to `childList` mutations.
+- Added a simple debounce in `scheduleRefresh()` so repeated DOM mutations clear the previous timeout and leave only one pending refresh.
+
+Commands:
+- `node test/run-all.js` -> passed, 12/12 tests green.
+- `node --check src/content/detector.js` -> passed.
+- `node --check src/content/overlay-button.js` -> passed.
+- `node --check src/content/index.js` -> passed.
