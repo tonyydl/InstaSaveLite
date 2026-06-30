@@ -38,3 +38,14 @@ Commands:
 - `node --check src/content/detector.js` -> passed.
 - `node --check src/content/overlay-button.js` -> passed.
 - `node --check src/content/index.js` -> passed.
+
+Fix 3:
+- Relaxed `collectMediaCandidates()` in `src/content/detector.js` so it keeps all visible media candidates, not just the ones already in viewport, while preserving the `inViewport` metadata used by scoring.
+- Updated `downloadBestCandidate()` in `src/content/index.js` to prefer the first in-viewport candidate and fall back to the first candidate when none are in viewport.
+- Added content-script tests to cover the viewport selection behavior and to confirm `GET_MEDIA` remains the only handled message type.
+
+Commands:
+- `node test/run-all.js` -> passed, 14/14 tests green.
+- `node --check src/content/detector.js` -> passed.
+- `node --check src/content/overlay-button.js` -> passed.
+- `node --check src/content/index.js` -> passed.

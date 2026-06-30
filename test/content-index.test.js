@@ -12,6 +12,9 @@ function loadContentScript() {
   const clearedTimers = [];
   const observers = [];
   const listeners = [];
+  const sentMessages = [];
+  let createdButton = null;
+  let detectorCandidates = [];
   let nextTimerId = 1;
 
   const documentElement = {
@@ -33,8 +36,9 @@ function loadContentScript() {
             listeners.push(listener);
           }
         },
-        sendMessage() {
-          throw new Error("sendMessage should not be called in these tests");
+        sendMessage(message) {
+          sentMessages.push(message);
+          return Promise.resolve();
         }
       }
     },
@@ -76,19 +80,38 @@ function loadContentScript() {
     },
     detector: {
       collectMediaCandidates() {
-        return [];
+        return detectorCandidates;
       }
     },
     overlay: {
-      createDownloadButton() {
-        return { hidden: false };
+      createDownloadButton(options) {
+        createdButton = {
+          hidden: false,
+          click() {
+            return options.onClick();
+          }
+        };
+        return createdButton;
       }
     }
   };
 
   vm.runInNewContext(scriptSource, context, { filename: scriptPath });
 
-  return { timers, clearedTimers, observers, listeners, document };
+  return {
+    timers,
+    clearedTimers,
+    observers,
+    listeners,
+    document,
+    sentMessages,
+    get createdButton() {
+      return createdButton;
+    },
+    set detectorCandidates(value) {
+      detectorCandidates = value;
+    }
+  };
 }
 
 test("observes media attribute changes that Instagram mutates in place", () => {
@@ -108,4 +131,29 @@ test("debounces refresh scheduling during rapid mutation bursts", () => {
 
   assert.equal(timers.length, 1);
   assert.deepEqual(clearedTimers, [1, 2]);
+});
+
+test("downloadBestCandidate prefers the first in-viewport candidate", async () => {
+  const env = loadContentScript();
+  env.detectorCandidates = [
+    { id: "image-1", type: "image", url: "https://example.com/offscreen.jpg", inViewport: false },
+    { id: "image-2", type: "image", url: "https://example.com/onscreen.jpg", inViewport: true }
+  ];
+
+  env.timers[0].fn();
+  await env.createdButton.click();
+
+  assert.equal(env.sentMessages.length, 1);
+  assert.equal(env.sentMessages[0].payload.items[0].id, "image-2");
+});
+
+test("GET_MEDIA is the only handled message type", async () => {
+  const { listeners } = loadContentScript();
+
+  const getMediaResult = await listeners[0]({ type: "GET_MEDIA" });
+  const downloadMediaResult = listeners[0]({ type: "DOWNLOAD_MEDIA" });
+
+  assert.equal(Array.isArray(getMediaResult.items), true);
+  assert.equal(getMediaResult.items.length, 0);
+  assert.equal(downloadMediaResult, undefined);
 });

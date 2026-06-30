@@ -86,7 +86,7 @@
     const candidates = [
       ...collectVideoCandidates(documentRef),
       ...collectImageCandidates(documentRef)
-    ].filter((candidate) => candidate.visible && candidate.inViewport);
+    ].filter((candidate) => candidate.visible);
 
     return media.dedupeCandidates(candidates).map((candidate, index) => ({
       ...candidate,

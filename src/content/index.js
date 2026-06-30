@@ -19,9 +19,10 @@
     if (!candidates.length) {
       return;
     }
+    const bestCandidate = candidates.find((candidate) => candidate.inViewport) || candidates[0];
     await browserApi.runtime.sendMessage({
       type: messageTypes.DOWNLOAD_MEDIA,
-      payload: { items: [candidates[0]] }
+      payload: { items: [bestCandidate] }
     });
   }
 
