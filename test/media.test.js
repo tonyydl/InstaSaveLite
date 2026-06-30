@@ -33,6 +33,14 @@ test("createFilename includes date, type, padded index, and extension", () => {
   assert.equal(name, "instagram-2026-06-30-image-02.webp");
 });
 
+test("createFilename defaults unknown image URLs to jpg", () => {
+  const name = media.createFilename(
+    { type: "image", index: 1, url: "https://example.com/media?id=123" },
+    new Date("2026-06-30T12:00:00Z")
+  );
+  assert.equal(name, "instagram-2026-06-30-image-01.jpg");
+});
+
 test("isLikelyUiAsset filters small images and avatar URLs", () => {
   assert.equal(media.isLikelyUiAsset({ type: "image", width: 32, height: 32, url: "https://example.com/icon.jpg" }), true);
   assert.equal(media.isLikelyUiAsset({ type: "image", width: 1080, height: 1350, url: "https://example.com/avatar/profile.jpg" }), true);
