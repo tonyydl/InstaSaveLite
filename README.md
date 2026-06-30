@@ -30,3 +30,13 @@ Task 3 provides the extension scaffold and loadable runtime shells. Install the 
 ```bash
 node test/run-all.js
 ```
+
+## Manual Verification
+
+- Chrome: load the folder in `chrome://extensions` with Developer mode enabled.
+- Firefox: load `manifest.json` from `about:debugging#/runtime/this-firefox`.
+- Open an Instagram image post and confirm the popup lists at least one image.
+- Open an Instagram Reel or video post and confirm the popup lists a video when Instagram exposes a direct media URL in the DOM.
+- Click the in-page Download button and confirm a download starts.
+- Toggle Ask where to save, then download one item and confirm the browser prompts for a destination.
+- Use Download all on a carousel post and confirm duplicate URLs are not downloaded twice.
