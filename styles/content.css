@@ -22,33 +22,15 @@
   background: #1e293b;
 }
 
-.instasavelite-download-button span {
-  height: 18px;
-  position: relative;
-  width: 18px;
-}
-
-.instasavelite-download-button span::before {
-  background: #f8fafc;
-  border-radius: 999px;
-  content: "";
-  height: 12px;
-  left: 8px;
-  position: absolute;
-  top: 1px;
-  width: 2px;
-}
-
-.instasavelite-download-button span::after {
-  border-bottom: 2px solid #f8fafc;
-  border-right: 2px solid #f8fafc;
-  content: "";
-  height: 8px;
-  left: 5px;
-  position: absolute;
-  top: 6px;
-  transform: rotate(45deg);
-  width: 8px;
+.instasavelite-download-button svg {
+  fill: none;
+  height: 20px;
+  pointer-events: none;
+  stroke: #f8fafc;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.25;
+  width: 20px;
 }
 
 .instasavelite-download-button[hidden] {
