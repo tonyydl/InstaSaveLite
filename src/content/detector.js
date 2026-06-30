@@ -15,6 +15,24 @@
     return rect.bottom > 0 && rect.right > 0 && rect.top < height && rect.left < width;
   }
 
+  function getActiveMediaRoot(doc) {
+    const dialogs = Array.from(doc.querySelectorAll('[role="dialog"]'))
+      .filter((dialog) => isVisibleElement(dialog) && isInViewport(dialog, doc));
+    if (dialogs.length) {
+      return dialogs[dialogs.length - 1];
+    }
+
+    if (/\/(p|reel|reels|tv)\//.test(globalScope.location.pathname || "")) {
+      const articles = Array.from(doc.querySelectorAll("article"))
+        .filter((article) => isVisibleElement(article) && isInViewport(article, doc));
+      if (articles.length) {
+        return articles[0];
+      }
+    }
+
+    return doc;
+  }
+
   function candidateFromElement(element, type, url, index, doc) {
     const normalized = media.normalizeMediaUrl(url, doc.baseURI);
     if (!normalized) {
@@ -83,9 +101,11 @@
   }
 
   function collectMediaCandidates(documentRef) {
+    const doc = documentRef || document;
+    const rootElement = getActiveMediaRoot(doc);
     const candidates = [
-      ...collectVideoCandidates(documentRef),
-      ...collectImageCandidates(documentRef)
+      ...collectVideoCandidates(rootElement),
+      ...collectImageCandidates(rootElement)
     ].filter((candidate) => candidate.visible);
 
     return media.dedupeCandidates(candidates).map((candidate, index) => ({
@@ -96,6 +116,7 @@
   }
 
   root.detector = {
+    getActiveMediaRoot,
     collectMediaCandidates
   };
 })(globalThis);
