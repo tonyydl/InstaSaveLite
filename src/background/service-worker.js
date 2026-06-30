@@ -6,7 +6,17 @@ const root = globalThis.InstaSaveLite;
 const browserApi = globalThis.browser || globalThis.chrome;
 const messageTypes = root.constants.MESSAGE_TYPES;
 
-browserApi.runtime.onInstalled.addListener(() => {
+function isFreshInstall(details) {
+  const installReason = browserApi.runtime && browserApi.runtime.OnInstalledReason && browserApi.runtime.OnInstalledReason.INSTALL;
+
+  return Boolean(details) && (details.reason === "install" || (installReason !== undefined && details.reason === installReason));
+}
+
+browserApi.runtime.onInstalled.addListener((details) => {
+  if (!isFreshInstall(details)) {
+    return;
+  }
+
   root.storage.saveSettings(root.constants.DEFAULT_SETTINGS);
 });
 

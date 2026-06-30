@@ -6,3 +6,9 @@
   - `node --check src/background/service-worker.js`
   - `node test/run-all.js`
 
+## Fix
+
+- Command: `node --check src/background/service-worker.js`
+  - Result: passed with exit code 0.
+- Command: `node test/run-all.js`
+  - Result: passed with 15 tests, 0 failures.
