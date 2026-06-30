@@ -23,7 +23,7 @@ This extension does not bypass login, private accounts, deleted content, paid co
 
 ## Usage
 
-Open an Instagram page. Use the in-page download button for the current media, or open the toolbar popup to download one detected item or all detected items.
+Task 3 provides the extension scaffold and loadable runtime shells. Install the unpacked extension, open an Instagram page, and confirm the extension loads without errors. The in-page download button and toolbar popup download flows are planned for later tasks.
 
 ## Tests
 
