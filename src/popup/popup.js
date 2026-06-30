@@ -26,6 +26,31 @@
     return Array.isArray(response && response.items) ? response.items : [];
   }
 
+  async function getSettings() {
+    const response = await browserApi.runtime.sendMessage({
+      type: messageTypes.GET_SETTINGS
+    });
+
+    if (!response || response.type !== messageTypes.GET_SETTINGS) {
+      throw new Error("Failed to load settings");
+    }
+
+    return response.payload && response.payload.settings ? response.payload.settings : {};
+  }
+
+  async function saveSettings(settings) {
+    const response = await browserApi.runtime.sendMessage({
+      type: messageTypes.SAVE_SETTINGS,
+      payload: { settings }
+    });
+
+    if (!response || response.type !== messageTypes.SAVE_SETTINGS) {
+      throw new Error("Failed to save settings");
+    }
+
+    return response.payload && response.payload.settings ? response.payload.settings : {};
+  }
+
   async function downloadItems(items) {
     const response = await browserApi.runtime.sendMessage({
       type: messageTypes.DOWNLOAD_MEDIA,
@@ -95,12 +120,13 @@
   }
 
   async function loadSettings() {
-    const settings = await root.storage.getSettings();
+    const settings = await getSettings();
     askWhereToSaveInput.checked = settings.askWhereToSave;
   }
 
   askWhereToSaveInput.addEventListener("change", async () => {
-    await root.storage.saveSettings({ askWhereToSave: askWhereToSaveInput.checked });
+    const settings = await saveSettings({ askWhereToSave: askWhereToSaveInput.checked });
+    askWhereToSaveInput.checked = settings.askWhereToSave;
   });
 
   downloadAllButton.addEventListener("click", async () => {

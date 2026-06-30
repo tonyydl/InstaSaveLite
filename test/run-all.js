@@ -3,6 +3,7 @@ const { spawnSync } = require("node:child_process");
 const files = [
   "test/content-index.test.js",
   "test/media.test.js",
+  "test/popup.test.js",
   "test/service-worker.test.js",
   "test/storage.test.js"
 ].filter((file) => require("node:fs").existsSync(file));

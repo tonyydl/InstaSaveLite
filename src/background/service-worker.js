@@ -34,7 +34,30 @@ async function downloadItem(item, saveAs) {
 }
 
 browserApi.runtime.onMessage.addListener((message) => {
-  if (!message || message.type !== messageTypes.DOWNLOAD_MEDIA) {
+  if (!message) {
+    return undefined;
+  }
+
+  if (message.type === messageTypes.GET_SETTINGS) {
+    return (async () => ({
+      type: messageTypes.GET_SETTINGS,
+      payload: {
+        settings: await root.storage.getSettings()
+      }
+    }))();
+  }
+
+  if (message.type === messageTypes.SAVE_SETTINGS) {
+    return (async () => {
+      const settings = await root.storage.saveSettings(message.payload && message.payload.settings);
+      return {
+        type: messageTypes.SAVE_SETTINGS,
+        payload: { settings }
+      };
+    })();
+  }
+
+  if (message.type !== messageTypes.DOWNLOAD_MEDIA) {
     return undefined;
   }
 
